@@ -1,19 +1,9 @@
 #include <string.h>
 #include "esp32_rmt_van_rx.h"
 
-volatile uint8_t _rmt_van_rx_ledPin;
-volatile uint8_t _rmt_van_rx_rxPin;
 volatile uint8_t _rmt_van_rx_channel;
 volatile uint8_t _rmt_van_rx_time_slice_divisor;
 volatile RX_VAN_LINE_LEVEL _rmt_van_rx_van_line_level;
-
-/* Initialize LED */
-void rmt_van_rx_led_init(uint8_t ledPin)
-{
-    _rmt_van_rx_ledPin = ledPin;
-    gpio_pad_select_gpio(ledPin);
-    gpio_set_direction(ledPin, GPIO_MODE_OUTPUT);
-}
 
 /* Rounds a number to the nearest multiple */
 uint8_t round_to_nearest(uint8_t numToRound, uint8_t multiple)
@@ -81,10 +71,8 @@ bool rmt_van_rx_parse_byte(uint8_t level, uint32_t duration, uint8_t *bitCounter
 }
 
 /* RMT receiver function */
-void rmt_van_rx_receive(uint8_t *vanMessageLength, uint8_t vanMessage[]) 
+void rmt_van_rx_receive(uint8_t *vanMessageLength, uint8_t vanMessage[])
 {
-    *vanMessageLength = 0;
-
     size_t i;
     size_t rx_size = 0;
     rmt_item32_t* items = NULL;
@@ -99,9 +87,6 @@ void rmt_van_rx_receive(uint8_t *vanMessageLength, uint8_t vanMessage[])
     items = (rmt_item32_t*) xRingbufferReceive(rb, &rx_size, 8);
     if (items)
     {
-        // turn on visible led
-        gpio_set_level(_rmt_van_rx_ledPin, 1);
-
         uint8_t bitCounter = 0;
         uint8_t mask = 1 << 7;
         uint8_t tempByte = 0;
@@ -126,17 +111,13 @@ void rmt_van_rx_receive(uint8_t *vanMessageLength, uint8_t vanMessage[])
                 *vanMessageLength = *vanMessageLength + 1;
             }
         }
-
-        // turn off visible led
-        gpio_set_level(_rmt_van_rx_ledPin, 0);
-
         // free up data space
         vRingbufferReturnItem(rb, (void*) items);
     }
 }
 
-/* 
-    Calculates the CRC-15 of the input data to according to the VAN ISO/11519–3 standard 
+/*
+    Calculates the CRC-15 of the input data to according to the VAN ISO/11519–3 standard
     Borrowed from here: http://graham.auld.me.uk/projects/vanbus/crc15.html
 */
 uint16_t rmt_van_rx_crc15(uint8_t data[], uint8_t lengthOfData)
@@ -201,14 +182,10 @@ bool rmt_van_rx_is_crc_ok(uint8_t vanMessage[], uint8_t vanMessageLength)
 }
 
 /* Initialize RMT receive channel */
-void rmt_van_rx_channel_init(uint8_t channel, uint8_t rxPin, uint8_t ledPin, RX_VAN_LINE_LEVEL vanLineLevel, RX_VAN_NETWORK_TYPE vanNetworkType)
+void rmt_van_rx_channel_init(uint8_t channel, uint8_t rxPin, RX_VAN_LINE_LEVEL vanLineLevel, RX_VAN_NETWORK_TYPE vanNetworkType)
 {
-    _rmt_van_rx_ledPin = ledPin;
     _rmt_van_rx_channel = channel;
-    _rmt_van_rx_rxPin = rxPin;
     _rmt_van_rx_van_line_level = vanLineLevel;
-
-    rmt_van_rx_led_init(_rmt_van_rx_ledPin);
 
     rmt_config_t rmt_rx;
 

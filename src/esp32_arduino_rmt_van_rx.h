@@ -29,8 +29,6 @@
 class ESP32_RMT_VAN_RX
 {
 private:
-    uint8_t _rxPin;
-    uint8_t _ledPin;
     uint8_t _channel;
 
 public:
@@ -38,7 +36,7 @@ public:
     ~ESP32_RMT_VAN_RX();
 
     void Receive(uint8_t *messageLength, uint8_t message[]);
-    void Init(uint8_t channel, uint8_t rxPin, uint8_t ledPin, VAN_LINE_LEVEL vanLineLevel, VAN_NETWORK_TYPE vanNetworkType);
+    void Init(uint8_t channel, uint8_t rxPin, VAN_LINE_LEVEL vanLineLevel, VAN_NETWORK_TYPE vanNetworkType);
     void Stop(uint8_t channel);
     bool IsCrcOk(uint8_t vanMessage[], uint8_t vanMessageLength);
 };
