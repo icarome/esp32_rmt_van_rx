@@ -1,6 +1,6 @@
-/* Arduino version of the ESP32 RMT VAN bus receive example, 
+/* Arduino version of the ESP32 RMT VAN bus receive example,
  * displaying the received VAN messages on the serial console
- * 
+ *
  * The software is distributed under the MIT License
  *
  * Unless required by applicable law or agreed to in writing, this
@@ -14,7 +14,6 @@ ESP32_RMT_VAN_RX VAN_RX;
 
 const uint8_t VAN_DATA_RX_RMT_CHANNEL = 0;
 const uint8_t VAN_DATA_RX_PIN = 21;
-const uint8_t VAN_DATA_RX_LED_INDICATOR_PIN = 2;
 
 uint8_t vanMessageLength;
 uint8_t vanMessage[34];
@@ -23,11 +22,11 @@ uint32_t lastMillis = 0;
 
 void setup()
 {
-    Serial.begin(500000);
+    Serial.begin(115200);
     printf("ESP32 Arduino VAN bus monitor\n");
 
-    VAN_RX.Init(VAN_DATA_RX_RMT_CHANNEL, VAN_DATA_RX_PIN, VAN_DATA_RX_LED_INDICATOR_PIN, VAN_LINE_LEVEL_HIGH, VAN_NETWORK_TYPE_COMFORT);
-    //VAN_RX.Init(VAN_DATA_RX_RMT_CHANNEL, VAN_DATA_RX_PIN, VAN_DATA_RX_LED_INDICATOR_PIN, VAN_LINE_LEVEL_HIGH, VAN_NETWORK_TYPE_BODY);
+    VAN_RX.Init(VAN_DATA_RX_RMT_CHANNEL, VAN_DATA_RX_PIN, VAN_LINE_LEVEL_HIGH, VAN_NETWORK_TYPE_COMFORT);
+    //VAN_RX.Init(VAN_DATA_RX_RMT_CHANNEL, VAN_DATA_RX_PIN, VAN_LINE_LEVEL_HIGH, VAN_NETWORK_TYPE_BODY);
 }
 
 void loop()
